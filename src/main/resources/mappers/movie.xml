@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.offcn.dao.MovieDao">
+ <!-- 查询列表 -->
+	<select id="selectMovieList" parameterType="com.offcn.bean.ConditionBean" resultType="com.offcn.bean.Movie">
+		SELECT m.*
+		FROM movietable m JOIN moviedetailtable md
+		ON m.id = md.id
+		<where>
+			<if test="area != null and area.length > 0">
+				and md.categroy like concat('%',#{area},'%')
+			</if>
+			<if test="type != null and type.length > 0">
+				and md.categroy like concat('%',#{type},'%')
+			</if>
+			<if test="style != null and style.length > 0">
+				and md.categroy like concat('%',#{style},'%')
+			</if>
+			<if test="year != null and year.length > 0">
+				and SUBSTR(m.imagepath,31,4) BETWEEN #{low} AND #{high}
+			</if>
+		</where>
+	</select>
+
+  
+  </mapper>

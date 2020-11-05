@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/mvc
+        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    
+    <!-- <bean id="logAop" class="com.offcn.aop.LogAop"></bean> -->
+    <!-- 切入功能的实现，比如controller类的方法进行其他功能的切入 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+	<!-- 扫描包 -->
+	<!-- springmvc层只扫描controller层，不扫描service、dao层 -->
+	<context:component-scan base-package="com.offcn">
+		<!-- 只扫描controller，甚至只扫描@Controller注解 -->
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<!-- 防止事务偶尔失效的配置  -->
+		<!-- 不扫@Service注解 -->
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+	</context:component-scan>
+	
+	<!-- 注解驱动 -->
+	<!-- 注册工厂 -->
+	<mvc:annotation-driven conversion-service="conversionService" validator="validator"></mvc:annotation-driven>
+	<!-- 取消静态资源的拦截 -->
+	<mvc:default-servlet-handler/>
+	
+	<!-- 日期转换器的配置 -->
+	<bean id="conversionService"
+        class="org.springframework.context.support.ConversionServiceFactoryBean">
+	    <property name="converters">
+	        <set>
+	            <bean class="com.offcn.converter.DateConverter"/>
+	        </set>
+	    </property>
+	</bean>
+	
+	<!-- 上传解析器 -->
+	<!-- id名称固定 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	</bean>
+	
+	<!-- 校验器工厂，工厂中包含校验器 -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator"></property>
+	</bean>
+</beans>
